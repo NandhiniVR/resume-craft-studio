@@ -1,0 +1,100 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper to check if the user is access their own document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper to check if database document belongs to user
+    function documentBelongsToUser() {
+      return isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Helper for writes where userId is provided in request body
+    function incomingDataBelongsToUser() {
+      return isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Users Collection rules
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // Resumes Collection rules
+    match /resumes/{resumeId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+
+    // Resume Versions subcollection (or top-level versions collection)
+    match /resumeVersions/{versionId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+
+    // Resume Analyses collection rules
+    match /resumeAnalyses/{analysisId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+
+    // Job Matches collection rules
+    match /jobMatches/{matchId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+
+    // Cover Letters collection rules
+    match /coverLetters/{coverLetterId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+
+    // Applications collection rules
+    match /applications/{applicationId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+
+    // Interviews collection rules
+    match /interviews/{interviewId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+
+    // Certificates collection rules
+    match /certificates/{certificateId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+
+    // Uploaded Files collection rules
+    match /uploadedFiles/{fileId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+
+    // Activity Logs collection rules
+    match /activityLogs/{logId} {
+      allow read, delete: if documentBelongsToUser();
+      allow create: if incomingDataBelongsToUser();
+      allow update: if documentBelongsToUser() && incomingDataBelongsToUser();
+    }
+  }
+}
